@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Imsakiyah Ramadhan 1447 H</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f5132;
+            --gold: #c5a059;
+            --bg: #f8f9fa;
+            --maghrib: #d35400;
+            --text: #2c3e50;
+            --highlight-today: #d1e7dd; 
+            --fasting-bg: #b2ff59; /* Hijau (Puasa) */
+            --night-bg: #e3f2fd;   /* Biru (Malam/Buka-Sahur) */
+            --night-border: #90caf9;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-top: 5px solid var(--primary);
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            text-align: center;
+            padding: 0;
+            background: white;
+            border-bottom: 2px solid #eee;
+            border-radius: 7px 7px 0 0;
+        }
+
+        .header-logo {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* --- INFO BAR --- */
+        .info-bar {
+            background-color: var(--highlight-today);
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .progress-tracker, .countdown-tracker {
+            padding: 10px 15px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .countdown-tracker {
+            background-color: #c0dec0;
+            font-size: 0.85rem;
+            border-top: 1px dashed var(--primary);
+        }
+
+        .progress-count {
+            background: var(--primary);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .countdown-time {
+            background: var(--text);
+            color: var(--gold);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 1rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        @media (min-width: 768px) {
+            .info-bar { flex-direction: row; justify-content: center; }
+            .countdown-tracker { border-top: none; border-left: 2px solid var(--primary); background-color: transparent; font-size: 0.95rem; }
+        }
+
+        /* --- DESKTOP --- */
+        .desktop-view { width: 100%; border-collapse: collapse; }
+        .desktop-view thead { background-color: var(--primary); color: white; }
+        .desktop-view th { padding: 15px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .desktop-view td { padding: 12px; text-align: center; border-bottom: 1px solid #eee; font-size: 0.95rem; }
+        .desktop-view tr:nth-child(even) { background-color: #fcfcfc; }
+        
+        /* Highlight States Desktop */
+        .desktop-view tr.fasting-active { background-color: var(--fasting-bg) !important; }
+        .desktop-view tr.night-active { background-color: var(--night-bg) !important; }
+        .desktop-view tr.past-row { opacity: 0.5; background-color: #eee !important; }
+
+        .d-ramadhan { font-weight: bold; color: var(--primary); }
+        .d-maghrib { color: var(--maghrib); font-weight: bold; background: rgba(211, 84, 0, 0.05); }
+
+        /* --- MOBILE --- */
+        .mobile-list { display: none; }
+
+        @media (max-width: 768px) {
+            .desktop-view { display: none; }
+            .mobile-list { display: block; padding: 10px; }
+
+            .day-card {
+                background: white;
+                border: 1px solid #e0e0e0;
+                border-radius: 10px;
+                margin-bottom: 15px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+                overflow: hidden;
+                transition: transform 0.2s;
+                position: relative;
+            }
+
+            .day-card.past-card { opacity: 0.6; filter: grayscale(0.5); }
+
+            .checkmark-overlay {
+                position: absolute;
+                top: 50%; left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 8rem;
+                color: rgba(15, 81, 50, 0.15);
+                z-index: 10;
+                pointer-events: none;
+                font-weight: bold;
+            }
+
+            /* State: Sedang Puasa (Hijau) */
+            .day-card.fasting-active {
+                background-color: var(--fasting-bg) !important;
+                border: 2px solid var(--primary);
+                transform: scale(1.02);
+                box-shadow: 0 5px 15px rgba(15, 81, 50, 0.3);
+            }
+
+            /* State: Malam/Sudah Buka (Biru) */
+            .day-card.night-active {
+                background-color: var(--night-bg) !important;
+                border: 2px solid #2196f3;
+                transform: scale(1.02);
+                box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+            }
+
+            .day-card.fasting-active .card-header,
+            .day-card.night-active .card-header { background-color: var(--primary); }
+
+            /* Penyesuaian header kartu malam agar senada biru (Opsional, saat ini tetap hijau primary) */
+            .day-card.night-active .card-header { background-color: #1976d2; } 
+
+            .day-card.fasting-active .time-item,
+            .day-card.night-active .time-item { background-color: transparent; }
+            
+            .day-card.fasting-active .time-grid { background: rgba(0, 0, 0, 0.05); }
+            .day-card.night-active .time-grid { background: rgba(255, 255, 255, 0.4); }
+
+            .card-header {
+                background: var(--primary);
+                color: white;
+                padding: 10px 15px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: relative;
+                z-index: 2;
+            }
+
+            .ramadhan-badge {
+                background: var(--gold);
+                color: var(--primary);
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-size: 0.8rem;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+
+            .date-text { font-weight: 600; font-size: 0.95rem; }
+
+            .time-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1px;
+                background: #eee;
+                border-top: 1px solid #eee;
+                position: relative;
+                z-index: 2;
+            }
+
+            .time-item {
+                background: white;
+                padding: 10px 5px;
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            .time-label {
+                font-size: 0.7rem; color: #666; text-transform: uppercase; margin-bottom: 2px;
+            }
+
+            .time-value { font-size: 1rem; font-weight: 700; color: var(--text); }
+            .is-maghrib .time-value { color: var(--maghrib); }
+            .is-maghrib { background-color: #fff5eb; }
+        }
+
+        footer {
+            text-align: center; padding: 20px; font-size: 0.8rem; color: #888; border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <img src="kurawa_imsak.jpg" alt="Logo Jadwal Imsakiyah" class="header-logo">
+            <div class="info-bar">
+                <div class="progress-tracker">
+                    Puasa Selesai: <span class="progress-count" id="progressCount">0</span> / 30 Hari
+                </div>
+                <div class="countdown-tracker">
+                    Imsak: <span class="countdown-time" id="countdownImsak">--:--:--</span>
+                    &nbsp;|&nbsp;
+                    Maghrib: <span class="countdown-time" id="countdownMaghrib">--:--:--</span>
+                </div>
+            </div>
+        </header>
+
+        <table class="desktop-view">
+            <thead>
+                <tr>
+                    <th>Ramadhan</th>
+                    <th>Hari & Tanggal</th>
+                    <th>Imsak</th>
+                    <th>Subuh</th>
+                    <th>Zuhur</th>
+                    <th>Ashar</th>
+                    <th>Maghrib</th>
+                    <th>Isya</th>
+                </tr>
+            </thead>
+            <tbody id="desktopBody"></tbody>
+        </table>
+
+        <div class="mobile-list" id="mobileBody"></div>
+    </div>
+
+    <footer>
+        &copy; 2026 Kurawa 20. <br> Selamat Menunaikan Ibadah Puasa
+    </footer>
+
+    <script>
+        const scheduleData = [
+            { r: 1, d: "Kamis, 19 Feb", im: "04.28", su: "04.38", zu: "12.07", as: "15.16", ma: "18.20", is: "19.26" },
+            { r: 2, d: "Jumat, 20 Feb", im: "04.28", su: "04.38", zu: "12.07", as: "15.15", ma: "18.19", is: "19.25" },
+            { r: 3, d: "Sabtu, 21 Feb", im: "04.28", su: "04.38", zu: "12.07", as: "15.15", ma: "18.19", is: "19.25" },
+            { r: 4, d: "Minggu, 22 Feb", im: "04.28", su: "04.38", zu: "12.07", as: "15.14", ma: "18.19", is: "19.24" },
+            { r: 5, d: "Senin, 23 Feb", im: "04.28", su: "04.38", zu: "12.06", as: "15.13", ma: "18.18", is: "19.24" },
+            { r: 6, d: "Selasa, 24 Feb", im: "04.28", su: "04.38", zu: "12.06", as: "15.12", ma: "18.18", is: "19.24" },
+            { r: 7, d: "Rabu, 25 Feb", im: "04.29", su: "04.39", zu: "12.06", as: "15.11", ma: "18.18", is: "19.23" },
+            { r: 8, d: "Kamis, 26 Feb", im: "04.29", su: "04.39", zu: "12.06", as: "15.10", ma: "18.17", is: "19.23" },
+            { r: 9, d: "Jumat, 27 Feb", im: "04.29", su: "04.39", zu: "12.06", as: "15.09", ma: "18.17", is: "19.22" },
+            { r: 10, d: "Sabtu, 28 Feb", im: "04.29", su: "04.39", zu: "12.06", as: "15.08", ma: "18.17", is: "19.22" },
+            { r: 11, d: "Minggu, 1 Mar", im: "04.29", su: "04.39", zu: "12.05", as: "15.07", ma: "18.16", is: "19.21" },
+            { r: 12, d: "Senin, 2 Mar", im: "04.29", su: "04.39", zu: "12.05", as: "15.06", ma: "18.16", is: "19.21" },
+            { r: 13, d: "Selasa, 3 Mar", im: "04.29", su: "04.39", zu: "12.05", as: "15.05", ma: "18.15", is: "19.20" },
+            { r: 14, d: "Rabu, 4 Mar", im: "04.29", su: "04.39", zu: "12.05", as: "15.06", ma: "18.15", is: "19.20" },
+            { r: 15, d: "Kamis, 5 Mar", im: "04.29", su: "04.39", zu: "12.05", as: "15.06", ma: "18.15", is: "19.20" },
+            { r: 16, d: "Jumat, 6 Mar", im: "04.29", su: "04.39", zu: "12.04", as: "15.07", ma: "18.14", is: "19.19" },
+            { r: 17, d: "Sabtu, 7 Mar", im: "04.29", su: "04.39", zu: "12.04", as: "15.07", ma: "18.14", is: "19.19" },
+            { r: 18, d: "Minggu, 8 Mar", im: "04.29", su: "04.39", zu: "12.04", as: "15.08", ma: "18.13", is: "19.18" },
+            { r: 19, d: "Senin, 9 Mar", im: "04.29", su: "04.39", zu: "12.04", as: "15.08", ma: "18.13", is: "19.18" },
+            { r: 20, d: "Selasa, 10 Mar", im: "04.29", su: "04.39", zu: "12.03", as: "15.08", ma: "18.12", is: "19.17" },
+            { r: 21, d: "Rabu, 11 Mar", im: "04.29", su: "04.39", zu: "12.03", as: "15.09", ma: "18.12", is: "19.17" },
+            { r: 22, d: "Kamis, 12 Mar", im: "04.29", su: "04.39", zu: "12.03", as: "15.09", ma: "18.11", is: "19.16" },
+            { r: 23, d: "Jumat, 13 Mar", im: "04.29", su: "04.39", zu: "12.03", as: "15.09", ma: "18.11", is: "19.16" },
+            { r: 24, d: "Sabtu, 14 Mar", im: "04.29", su: "04.39", zu: "12.02", as: "15.09", ma: "18.10", is: "19.15" },
+            { r: 25, d: "Minggu, 15 Mar", im: "04.29", su: "04.39", zu: "12.02", as: "15.10", ma: "18.10", is: "19.15" },
+            { r: 26, d: "Senin, 16 Mar", im: "04.29", su: "04.39", zu: "12.02", as: "15.10", ma: "18.10", is: "19.14" },
+            { r: 27, d: "Selasa, 17 Mar", im: "04.29", su: "04.39", zu: "12.01", as: "15.10", ma: "18.09", is: "19.14" },
+            { r: 28, d: "Rabu, 18 Mar", im: "04.29", su: "04.39", zu: "12.01", as: "15.10", ma: "18.09", is: "19.13" },
+            { r: 29, d: "Kamis, 19 Mar", im: "04.29", su: "04.39", zu: "12.01", as: "15.11", ma: "18.08", is: "19.13" },
+            { r: 30, d: "Jumat, 20 Mar", im: "04.29", su: "04.39", zu: "12.01", as: "15.11", ma: "18.08", is: "19.12" }
+        ];
+
+        function parseDateTime(dateString, timeString) {
+            const parts = dateString.split(' ');
+            if (parts.length < 3) return null;
+            const day = parseInt(parts[1], 10);
+            const monthMap = { "Jan": 0, "Feb": 1, "Mar": 2, "Apr": 3 };
+            const month = monthMap[parts[2]];
+            const today = new Date();
+            const year = today.getFullYear();
+            const timeParts = timeString.split('.');
+            return new Date(year, month, day, parseInt(timeParts[0]), parseInt(timeParts[1]), 0);
+        }
+
+        const desktopBody = document.getElementById('desktopBody');
+        const mobileBody = document.getElementById('mobileBody');
+        const progressCountEl = document.getElementById('progressCount');
+        const countdownImsakEl = document.getElementById('countdownImsak');
+        const countdownMaghribEl = document.getElementById('countdownMaghrib');
+        
+        let totalCompletedFasts = 0;
+        const allImsakTimes = [];
+        const allMaghribTimes = [];
+        
+        const now = new Date(); // Waktu saat ini untuk rendering awal
+
+        scheduleData.forEach((item, index) => {
+            const imsakTime = parseDateTime(item.d, item.im);
+            const maghribTime = parseDateTime(item.d, item.ma);
+            
+            if(imsakTime) allImsakTimes.push(imsakTime);
+            if(maghribTime) allMaghribTimes.push(maghribTime);
+
+            // Logika menentukan Imsak hari berikutnya (untuk batas akhir warna biru)
+            let nextDayImsak = null;
+            if (index < scheduleData.length - 1) {
+                nextDayImsak = parseDateTime(scheduleData[index + 1].d, scheduleData[index + 1].im);
+            } else {
+                // Penanganan hari terakhir (misal besoknya 1 Syawal)
+                let tempDate = new Date(maghribTime);
+                tempDate.setDate(tempDate.getDate() + 1);
+                tempDate.setHours(4, 0, 0); // Asumsi dummy
+                nextDayImsak = tempDate;
+            }
+
+            // --- LOGIKA STATUS ---
+            const isCompleted = now >= maghribTime; // Sudah Maghrib hari ini -> Centang
+            
+            // 1. Hijau: Antara Imsak hari ini s/d Maghrib hari ini
+            const isFasting = (now >= imsakTime && now < maghribTime);
+            
+            // 2. Biru: Sudah Maghrib hari ini TAPI belum Imsak besok
+            const isNight = (now >= maghribTime && now < nextDayImsak);
+            
+            // 3. Past: Sudah lewat Imsak besok (Kartu hari ini jadi redup total)
+            const isTotallyPast = (now >= nextDayImsak);
+
+            if (isCompleted) totalCompletedFasts++;
+
+            // --- RENDER DESKTOP ---
+            const tr = document.createElement('tr');
+            if (isFasting) {
+                tr.className = 'fasting-active';
+            } else if (isNight) {
+                tr.className = 'night-active';
+            } else if (isTotallyPast) {
+                tr.className = 'past-row';
+            }
+
+            tr.innerHTML = `
+                <td class="d-ramadhan">${item.r} ${isCompleted ? '✓' : ''}</td>
+                <td>${item.d}</td>
+                <td>${item.im}</td>
+                <td>${item.su}</td>
+                <td>${item.zu}</td>
+                <td>${item.as}</td>
+                <td class="d-maghrib">${item.ma}</td>
+                <td>${item.is}</td>
+            `;
+            desktopBody.appendChild(tr);
+
+            // --- RENDER MOBILE ---
+            let cardClasses = 'day-card';
+            if (isFasting) {
+                cardClasses += ' fasting-active';
+            } else if (isNight) {
+                cardClasses += ' night-active';
+            } else if (isTotallyPast) {
+                cardClasses += ' past-card';
+            } 
+            // Hapus logika "today-active" generik agar tidak menimpa status biru malam
+
+            const checkmarkHtml = isCompleted ? '<div class="checkmark-overlay">✓</div>' : '';
+
+            const card = document.createElement('div');
+            card.className = cardClasses;
+            card.innerHTML = `
+                ${checkmarkHtml}
+                <div class="card-header">
+                    <span class="ramadhan-badge">Ramadhan ${item.r}</span>
+                    <span class="date-text">${item.d}</span>
+                </div>
+                <div class="time-grid">
+                    <div class="time-item"><span class="time-label">Imsak</span><span class="time-value">${item.im}</span></div>
+                    <div class="time-item"><span class="time-label">Subuh</span><span class="time-value">${item.su}</span></div>
+                    <div class="time-item"><span class="time-label">Zuhur</span><span class="time-value">${item.zu}</span></div>
+                    <div class="time-item"><span class="time-label">Ashar</span><span class="time-value">${item.as}</span></div>
+                    <div class="time-item is-maghrib"><span class="time-label">Maghrib</span><span class="time-value">${item.ma}</span></div>
+                    <div class="time-item"><span class="time-label">Isya</span><span class="time-value">${item.is}</span></div>
+                </div>
+            `;
+            mobileBody.appendChild(card);
+        });
+
+        progressCountEl.textContent = totalCompletedFasts;
+
+        // --- SISTEM COUNTDOWN ---
+        function updateCountdowns() {
+            const nowRealtime = new Date(); // Update waktu real-time untuk timer
+
+            const nextImsak = allImsakTimes.find(time => time > nowRealtime);
+            const nextMaghrib = allMaghribTimes.find(time => time > nowRealtime);
+
+            function formatDiff(targetTime) {
+                if (!targetTime) return "Selesai";
+                const diff = targetTime - nowRealtime;
+                const h = Math.floor(diff / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+                return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            }
+
+            countdownImsakEl.textContent = formatDiff(nextImsak);
+            countdownMaghribEl.textContent = formatDiff(nextMaghrib);
+        }
+
+        setInterval(updateCountdowns, 1000);
+        updateCountdowns();
+    </script>
+</body>
+</html>
