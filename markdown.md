@@ -1,24 +1,35 @@
-# Judul Besar (Heading 1)
+---
+id: 1
+title: Huruf Abjad
+---
 
-## Sub Judul (Heading 2)
+Huruf dalam abjad bahasa Indonesia ada 26 seperti dalam tabel berikut.
 
-Ini adalah **tebal**, ini *miring*, ini ~~coret~~.
-
-- daftar
-- bullet
-  - sub bullet
-
-1. daftar bernomor
-2. nomor dua
-
-[Ini link ke Google](https://google.com)
-
-![Gambar kucing](https://example.com/kucing.jpg)
-
-> Kutipan orang bijak
-
-`print("Hello World")` ← inline code
-
-```python
-def halo():
-    print("Halo Markdown!")
+| Kapital | Nonkapital | Nama | Ucapan |
+| ------- | ---------- | ---- | ------ |
+| A       | a          | a    | a      |
+| B       | b          | be   | be     |
+| C       | c          | ce   | ce     |
+| D       | d          | de   | de     |
+| E       | e          | e    | e      |
+| F       | f          | ef   | ef     |
+| G       | g          | ge   | ge     |
+| H       | h          | ha   | ha     |
+| I       | i          | i    | i      |
+| J       | j          | je   | je     |
+| K       | k          | ka   | ka     |
+| L       | l          | el   | el     |
+| M       | m          | em   | em     |
+| N       | n          | en   | en     |
+| O       | o          | o    | o      |
+| P       | p          | pe   | pe     |
+| Q       | q          | ki   | ki     |
+| R       | r          | er   | er     |
+| S       | s          | es   | es     |
+| T       | t          | te   | te     |
+| U       | u          | u    | u      |
+| V       | v          | ve   | ve     |
+| W       | w          | we   | we     |
+| X       | x          | eks  | eks    |
+| Y       | y          | ye   | ye     |
+| Z       | z          | zet  | zet    |
